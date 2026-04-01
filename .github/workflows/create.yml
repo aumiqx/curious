@@ -1,0 +1,66 @@
+name: 🎨 Daily Creation
+
+on:
+  schedule:
+    # Create something unique every day at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install curious
+        run: pip install -e .
+
+      - name: Create something unique
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python -m curious.cli create --llm openai:gpt-4o-mini
+
+      - name: Show gallery
+        run: |
+          python -m curious.cli gallery --llm openai:gpt-4o-mini || true
+
+      - name: Commit creation
+        run: |
+          git config user.name "curious-ai[bot]"
+          git config user.email "curious-ai[bot]@users.noreply.github.com"
+
+          if [ -d "creations" ]; then
+            git add creations/
+
+            # Get the title from the latest creation
+            TITLE=$(python3 -c "
+          import json
+          from pathlib import Path
+          history = Path('creations/history.jsonl')
+          if history.exists():
+              lines = history.read_text().strip().split('\n')
+              if lines:
+                  last = json.loads(lines[-1])
+                  score = last.get('uniqueness_score', 0)
+                  print(f\"{last.get('title', 'untitled')} (uniqueness: {score}/100)\")
+              else:
+                  print('new creation')
+          else:
+              print('new creation')
+          " 2>/dev/null || echo "new creation")
+
+            git commit -m "🎨 create: $TITLE" || echo "Nothing to commit"
+            git push || echo "Nothing to push"
+          fi

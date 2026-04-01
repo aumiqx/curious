@@ -106,6 +106,55 @@ def start(observe, llm, interval, evolve_every, max_cycles):
 
 
 @main.command()
+@click.option("--llm", "-l", default="openai:gpt-4o-mini", help="LLM provider")
+def create(llm):
+    """Create something that has never existed before."""
+    from curious.providers.base import create_provider
+    from curious.harness.create import run_creation_cycle, get_creations_summary, CREATIONS_DIR
+
+    provider = create_provider(llm)
+
+    console.print("\n[bold cyan]🧬 curious[/] — creating something unique...\n")
+
+    result = run_creation_cycle(provider)
+
+    if result.get("error"):
+        console.print(f"  [red]Error:[/] {result['error']}")
+        return
+
+    score = result.get("uniqueness_score", 0)
+    color = "green" if score >= 70 else "yellow" if score >= 40 else "red"
+
+    console.print(Panel(
+        f"[bold]{result['title']}[/]\n\n"
+        f"{result.get('concept', '')}\n\n"
+        f"Uniqueness: [{color}]{score}/100[/]\n"
+        f"  Concept:        {result.get('score_breakdown', {}).get('concept', '?')}/30\n"
+        f"  Implementation: {result.get('score_breakdown', {}).get('implementation', '?')}/30\n"
+        f"  Structure:      {result.get('score_breakdown', {}).get('structure', '?')}/20\n"
+        f"  Naming:         {result.get('score_breakdown', {}).get('naming', '?')}/20\n\n"
+        f"Most novel: {result.get('most_novel', 'N/A')}\n"
+        f"Closest existing: {result.get('similar_existing', 'N/A')}\n\n"
+        f"Saved to: {CREATIONS_DIR}",
+        title=f"[bold cyan]🎨 Day {len(get_creations_summary().split(chr(10)))} Creation[/]",
+        border_style=color,
+    ))
+
+    console.print(f"\n  Feedback: {result.get('feedback', 'none')}\n")
+
+
+@main.command()
+@click.option("--llm", "-l", default="openai:gpt-4o-mini", help="LLM provider")
+def gallery(llm):
+    """Show all past creations and their uniqueness scores."""
+    from curious.harness.create import get_creations_summary
+    summary = get_creations_summary()
+    console.print(f"\n[bold cyan]🎨 Creation Gallery[/]\n")
+    console.print(summary or "  No creations yet. Run [bold]curious create[/] first.")
+    console.print()
+
+
+@main.command()
 @click.option("--observe", "-o", default=".", help="Path to observe")
 @click.option("--llm", "-l", default="openai:gpt-4o-mini", help="LLM provider")
 def dashboard(observe, llm):

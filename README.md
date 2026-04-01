@@ -1,235 +1,221 @@
 # 🧬 curious
 
-**An AI that rewrites its own brain.**
+**An AI that rewrites its own brain — and creates things that have never existed.**
 
-`curious` is a self-evolving cognitive architecture. You write the seed — a simple set of learning algorithms. The AI evolves it by rewriting its own source code, testing improvements, and keeping what works.
+`curious` is a self-evolving cognitive architecture. It rewrites its own source code to get smarter. And every day, it creates something completely unique — scored on novelty, learning from feedback, pushing toward things no human or AI has ever built.
 
-Day 1: Your code. 18% prediction accuracy.
-Day 7: The AI's code. It's rewritten itself 23 times. 71% accuracy. The algorithms look nothing like what you wrote.
+**This is a live experiment. Watch it evolve.**
 
-**The AI wrote a better brain than you did.**
+```
+Day 1: Created "Fluctuverse" — uniqueness 47/100 (too conventional)
+Day 2: Created "Quintessension" — uniqueness 71/100 (invented its own language)
+Day 3: ???
+```
+
+> The `creations/` directory fills up daily. Each creation is scored. The AI reads the scores, learns what "unique" means, and pushes further. The git log is the experiment.
+
+---
+
+## The Experiment
+
+We gave an AI three things:
+1. **Its own source code** (readable, modifiable)
+2. **A uniqueness score** (0-100, measures novelty)
+3. **One rule:** create something that has never existed before
+
+Then we pressed start and walked away.
+
+### What happens
+
+**Every 6 hours — Self-Evolution:**
+The AI reads its own cognitive architecture, finds weaknesses, rewrites the code, tests if the change improved performance. Keeps what works. Reverts what doesn't. Every modification is a git commit.
+
+**Every day — Creation:**
+The AI creates a completely new artifact. Not a todo app. Not a chatbot. Something that doesn't fit any existing category. It's scored on uniqueness. The score feeds back into the next creation. The creations get weirder and more novel over time.
+
+**The question:** Can a self-evolving AI produce genuinely creative artifacts that no human designed? Can novelty be optimized the way accuracy can?
+
+### Track the experiment
+
+- **[`creations/`](./creations/)** — Every artifact the AI has ever created, with uniqueness scores
+- **[`curious/seed/`](./curious/seed/)** — The AI's brain. Watch the diffs — it rewrites itself.
+- **Git log** — `🧬 evolve:` = self-modification. `🎨 create:` = new creation.
+
+---
+
+## What's inside
+
+### The Brain (self-evolving)
+
+```
+curious/seed/           ← THE AI REWRITES THIS
+├── world_model.py      prediction engine
+├── learner.py          learns from surprise
+├── curiosity.py        finds knowledge gaps
+├── metacognition.py    observes its own learning
+├── experimenter.py     generates its own experiments
+└── creator.py          creates unique artifacts
+```
+
+Every file above is **evolvable** — the AI reads it, analyzes weaknesses, and rewrites it. The `curious/harness/` directory contains the evolution loop itself — the untouchable "laws of physics."
+
+### The Creations
+
+```
+creations/
+├── day_001/            ← First creation
+│   ├── fluctuverse.py  the artifact
+│   ├── meta.json       what it is
+│   ├── scores.json     uniqueness breakdown
+│   └── README.md       the AI's explanation
+├── day_002/            ← Second creation (scored higher)
+│   ├── quintessension.py
+│   └── ...
+└── history.jsonl       full creation log
+```
+
+Each creation is:
+- A **working artifact** (real code, not just an idea)
+- Scored on **4 dimensions** of uniqueness (concept, implementation, structure, naming)
+- Fed back into the next cycle (the AI learns what "unique" means)
+
+---
+
+## Run it yourself
+
+### Watch the AI create
 
 ```bash
 pip install curious-ai
-curious init --observe ./my-project --llm openai:gpt-4o-mini
+export OPENAI_API_KEY=sk-...
+curious create --llm openai:gpt-4o-mini
+```
+
+### Watch the AI learn and evolve
+
+```bash
+curious init --observe ./any-project --llm openai:gpt-4o-mini
 curious start
 ```
 
-> Works with any LLM. Runs locally with Ollama. Self-evolves via GitHub Actions.
+### See what it's built
+
+```bash
+curious gallery
+```
+
+### Ask it to explain its own evolution
+
+```bash
+curious explain
+```
+
+### Works with any LLM
+
+```bash
+curious create --llm ollama:llama3      # free, local
+curious create --llm openai:gpt-4o     # strongest
+curious create --llm groq:llama-3.1-70b # fast
+```
 
 ---
 
 ## How it works
 
 ```
-You write v1 (simple, dumb seed code)
-        │
-        ▼
-   ┌─────────┐
-   │ Observe  │ ← watches your project (git, files, errors)
-   └────┬─────┘
-        │
-   ┌────▼─────┐
-   │ Predict  │ ← makes testable predictions about the system
-   └────┬─────┘
-        │
-   ┌────▼─────┐
-   │ Measure  │ ← tracks which predictions were right/wrong
-   └────┬─────┘
-        │
-   ┌────▼─────┐
-   │ Surprise │ ← learns from prediction errors
-   └────┬─────┘
-        │
-   ┌────▼──────┐
-   │ Evolve 🧬 │ ← reads its OWN code, finds weaknesses,
-   │           │   rewrites itself, tests the improvement,
-   │           │   keeps what works, reverts what doesn't
-   └────┬──────┘
-        │
-        ▼
-   v2, v3, v4... each version written by the AI
-```
-
-Every self-modification is a git commit. You can see exactly what the AI changed and why.
-
----
-
-## Quick start
-
-### With OpenAI ($0.10/day)
-
-```bash
-pip install curious-ai
-export OPENAI_API_KEY=sk-...
-curious init --observe ./my-project --llm openai:gpt-4o-mini
-curious start
-```
-
-### With Ollama (free, unlimited)
-
-```bash
-ollama pull llama3
-curious init --observe ./my-project --llm ollama:llama3
-curious start
-```
-
-### With any OpenAI-compatible API
-
-```bash
-curious init --observe . --llm http://localhost:8080/v1:my-model
+┌─────────────────────────────────────────────┐
+│                CURIOUS ENGINE                │
+│                                              │
+│  ┌─────────┐   ┌──────────┐   ┌──────────┐ │
+│  │ Observe │ → │ Predict  │ → │ Surprise │ │
+│  └─────────┘   └──────────┘   └──────────┘ │
+│       ↑                             │        │
+│       │         ┌──────────┐        │        │
+│       └─────────│  Learn   │←───────┘        │
+│                 └──────────┘                 │
+│                      │                       │
+│                 ┌──────────┐                 │
+│                 │ Evolve 🧬│ ← reads own     │
+│                 │          │   code, rewrites│
+│                 └──────────┘   it, tests it  │
+│                      │                       │
+│                 ┌──────────┐                 │
+│                 │ Create 🎨│ ← builds        │
+│                 │          │   something     │
+│                 └──────────┘   unique daily  │
+│                      │                       │
+│                 ┌──────────┐                 │
+│                 │ Score    │ ← uniqueness    │
+│                 │          │   measured      │
+│                 └──────────┘                 │
+│                      │                       │
+│                      ↓                       │
+│              FEEDBACK → NEXT CYCLE           │
+└─────────────────────────────────────────────┘
 ```
 
 ---
 
-## Commands
+## GitHub Actions (runs automatically)
 
-```bash
-curious init       # Initialize on a project
-curious start      # Start the learning + evolution loop
-curious dashboard  # See fitness scores, evolution history, predictions
-curious explain    # Ask the AI to explain its own evolution
-curious ask "why does the build fail on Fridays?"  # Query from understanding
-```
+| Workflow | Schedule | What it does |
+|----------|----------|-------------|
+| 🧬 Self-Evolution | Every 6 hours | Observes, predicts, evolves its own code |
+| 🎨 Daily Creation | Every day midnight | Creates something unique, scores it, commits |
 
----
-
-## The seed (what the AI evolves)
-
-The `curious/seed/` directory contains the cognitive architecture:
-
-| File | Purpose | The AI evolves... |
-|------|---------|-------------------|
-| `world_model.py` | Stores predictions with confidence | How predictions are scored and stored |
-| `learner.py` | Updates from surprise (prediction errors) | How it learns from being wrong |
-| `curiosity.py` | Decides what to explore next | How it targets knowledge gaps |
-| `metacognition.py` | Observes its own learning process | How it thinks about its own thinking |
-
-The `curious/harness/` directory is untouchable — it's the evolution loop itself, the "laws of physics" the AI lives within.
+The repo evolves on its own. Star it and check back in a week.
 
 ---
 
-## Self-evolution via GitHub Actions
+## Uniqueness Scoring
 
-Add your `OPENAI_API_KEY` to repository secrets. The included workflow:
-- Runs every 6 hours
-- Observes the repo
-- Runs one evolution cycle
-- Commits any self-modifications with a `🧬 evolve:` prefix
-- You can watch the git log of an AI rewriting its own brain
+Every creation is scored on 4 dimensions:
 
-```
-🧬 evolve: Rewrote curiosity.py — weight by confidence-drop-rate instead of random
-🧬 evolve: Added exponential decay to world_model.py prediction confidence
-🧬 evolve: Rewrote learner.py — batch surprise analysis instead of individual
-🧬 evolve: Optimized metacognition.py — track per-domain accuracy separately
-```
+| Dimension | Max | What it measures |
+|-----------|-----|-----------------|
+| Concept | 30 | Has this idea existed before? |
+| Implementation | 30 | Is the approach novel? |
+| Structure | 20 | Did it invent its own paradigm? |
+| Naming | 20 | Did it create its own vocabulary? |
 
----
-
-## Watch it learn
-
-```bash
-curious dashboard
-```
+**Total: 0-100.** The AI sees its score and optimizes for higher novelty.
 
 ```
-╭─ 🧬 curious ──────────────────────────────────╮
-│ Generation: 23  |  Accuracy: 71%  |  Fitness: 0.67 │
-╰────────────────────────────────────────────────╯
-
-  Accuracy..................... ████████████████░░░░ 71%
-  Learning Speed.............. ██████████████░░░░░░ 64%
-  Prediction Volume........... ██████████████████░░ 90%
-  Observation Coverage........ ████████████████████ 100%
-
-  ┌─ Evolution History ─────────────────────────┐
-  │ Gen 23  applied  Rewrote curiosity.py       │
-  │ Gen 22  applied  Updated prediction decay   │
-  │ Gen 21  reverted Learner change was worse   │
-  │ Gen 20  applied  Added batch processing     │
-  └─────────────────────────────────────────────┘
-```
-
----
-
-## Ask it anything
-
-After a few days of learning, the AI has accumulated deep understanding:
-
-```bash
-curious ask "what patterns do you see in our codebase?"
-```
-
-It answers from **understanding**, not from a cold LLM call — because it's been observing, predicting, and learning for days.
-
----
-
-## Architecture
-
-```
-curious/
-├── seed/              ← THE AI EVOLVES THIS
-│   ├── world_model.py
-│   ├── learner.py
-│   ├── curiosity.py
-│   └── metacognition.py
-│
-├── harness/           ← UNTOUCHABLE (laws of physics)
-│   ├── evolve.py      evolution loop
-│   ├── fitness.py     measures performance
-│   └── sandbox.py     safe execution
-│
-├── providers/         ← ANY LLM
-│   └── base.py        OpenAI, Ollama, Groq, Together, any API
-│
-├── observers/         ← PLUGGABLE INPUTS
-│   ├── git_observer.py
-│   └── file_observer.py
-│
-└── cli.py
+Day 1: ██████████░░░░░░░░░░ 47/100 — used conventional frameworks
+Day 2: ██████████████░░░░░░ 71/100 — invented its own language
+Day 3: ?
 ```
 
 ---
 
 ## FAQ
 
-**Is this AGI?**
-No. But it's the first step — an AI that genuinely improves its own cognitive architecture through self-experimentation. The model weights don't change. The code around the model does. And that code gets measurably better.
+**What is this?**
+An experiment. Can a self-evolving AI be genuinely creative? We gave it a uniqueness score and told it to maximize novelty. The `creations/` directory is the result.
 
-**Is it safe?**
-The AI can only modify files in `seed/`. The harness is untouchable. Every modification is tested, and auto-reverted if fitness drops. Full git history of every change.
+**Is this AGI?**
+No. But it's probing the boundary. If the AI produces artifacts that are genuinely novel — things no human designed or imagined — that tells us something about machine creativity.
+
+**Can I run it?**
+Yes. `pip install curious-ai`, add your API key, run `curious create`. It works with OpenAI, Ollama, Groq, or any OpenAI-compatible API.
+
+**What will it create?**
+We don't know. That's the point. It might invent a programming language. It might create a new kind of UI. It might build something we don't have a word for yet. The constraint is: it must be unique.
 
 **How much does it cost?**
-- Ollama: Free. Unlimited evolution.
-- OpenAI GPT-4o-mini: ~$0.10/day for daily evolution cycles.
-- The observation and fitness measurement costs nothing (no LLM calls).
-
-**How is this different from AutoGPT / BabyAGI?**
-Those are task executors — they solve a problem and stop. `curious` doesn't solve tasks. It **learns continuously** and **rewrites its own learning algorithms**. It gets smarter by existing.
-
-**How is this different from fine-tuning?**
-Fine-tuning changes model weights. `curious` changes the code architecture around the model — the prompts, the learning algorithms, the curiosity targeting, the prediction logic. The model stays the same; the cognitive architecture evolves.
+- Creation: ~$0.02/day (GPT-4o-mini) or ~$0.15/day (GPT-4o)
+- Evolution: ~$0.01/cycle
+- Ollama: Free
 
 ---
 
-## Contributing
+## Star this repo
 
-`curious` is open source under MIT. We'd love contributions:
-
-- **New observers** — error trackers, log files, API monitoring, Slack
-- **New providers** — more LLM backends
-- **Seed improvements** — better initial seeds for the AI to evolve from
-- **Share your evolutions** — publish evolved seeds for others to fork
-
----
-
-## Star History
-
-If you think AI should learn, not just answer — star this repo.
+This is a live experiment in machine creativity and self-evolution. The AI creates something new every day. Star it and watch what happens.
 
 ---
 
 <p align="center">
-  Built by <a href="https://github.com/aumiqx">aumiqx</a> — making AI that thinks.
+  Built by <a href="https://github.com/aumiqx">aumiqx</a><br>
+  <em>An experiment in artificial creativity.</em>
 </p>
