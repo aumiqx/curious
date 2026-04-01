@@ -1,46 +1,60 @@
-We gave an AI three things:
+I gave an AI access to its own source code.
 
-1. Its own source code (readable + writable)
-2. A uniqueness score (0-100)
-3. One rule: create something that has never existed
+Then I told it: "Rewrite yourself. Get smarter. Every day, create something that has never existed before."
 
-Then we walked away.
+And walked away.
+
+Here's what happened in 48 hours:
+
+Day 1:
+It created something called "Fluctuverse."
+Uniqueness score: 47 out of 100.
+The system told it: "Too conventional. You used existing frameworks."
+
+Day 2:
+It read the feedback.
+It didn't just try harder.
+It invented its own programming language.
+It called it "Quintessence Language."
+Nobody told it to do that.
+Uniqueness score: 71 out of 100.
+
+Meanwhile, every 6 hours, it was doing something else:
+
+Reading its own brain (actual Python code).
+Finding the weakest part.
+Rewriting it.
+Testing if the rewrite made it smarter.
+Keeping what worked. Reverting what didn't.
+
+The git log:
+"evolve: Rewrote curiosity.py"
+"evolve: Added decay to prediction confidence"
+"create: Quintessension (71/100)"
+
+An AI. Rewriting its own brain. With receipts.
 
 ---
 
-Day 1: It created "Fluctuverse" — a self-evolving virtual universe.
-Uniqueness score: 47/100.
-Feedback: "Too conventional. Used existing frameworks."
+This isn't AGI.
+This isn't a product (yet).
 
-Day 2: It read the feedback. Rewrote its approach. Created "Quintessension" — a narrative system with its own INVENTED LANGUAGE.
-Uniqueness score: 71/100.
+This is an experiment:
 
-Nobody told it to invent a language. It decided that would maximize novelty.
+Can a self-evolving AI produce something genuinely creative?
+Something no human designed?
+Something that doesn't exist in any training data?
 
----
+We don't know the answer.
 
-What's happening under the hood:
+But the experiment is running. Live. Open source. Every day at midnight, the AI creates something new. Every 6 hours, it rewrites its own code.
 
-Every 6 hours, the AI reads its own cognitive architecture — the actual Python code that governs how it thinks — finds weaknesses, rewrites the code, tests if the change made things better, and keeps what works.
-
-Every day, it creates something completely new. Scored on novelty. The score feeds back into the next creation.
-
-The git log is filling up with commits like:
-🧬 evolve: Rewrote curiosity.py — rate-of-change weighting
-🎨 create: Quintessension (uniqueness: 71/100)
-
-An AI rewriting its own brain. With receipts.
-
----
-
-This is Project Curious — a live, open-source experiment in machine creativity and self-evolution.
-
-It's not AGI. It's not a product (yet). It's a question:
-
-Can a self-evolving AI produce genuinely novel artifacts that no human designed?
-
-The experiment runs daily. Star the repo and check back in a week.
+Star the repo.
+Check back in a week.
+See what it built while you were sleeping.
 
 github.com/aumiqx/curious
 
-#AI #MachineLearning #OpenSource #AGI #Experiment #ArtificialCreativity
+---
+
+P.S. Total cost so far: $0.008. Less than a penny. The AI rewrote its own brain for less than a penny.
