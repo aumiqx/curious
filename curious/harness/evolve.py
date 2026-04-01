@@ -67,6 +67,9 @@ def validate_seed() -> bool:
     return True
 
 
+EVOLUTION_MODEL = "gpt-4o"  # Use stronger model for code generation
+
+
 def run_evolution_cycle(
     llm: LLMProvider,
     world_model: WorldModel,
@@ -141,10 +144,10 @@ CRITICAL RULES:
 
 ```python"""
 
-        # Try up to 2 times to get valid code
+        # Try up to 2 times with strong model
         new_code = ""
         for attempt in range(2):
-            new_code = llm.ask_code(rewrite_prompt)
+            new_code = llm.ask_code(rewrite_prompt, model_override=EVOLUTION_MODEL)
             if new_code and len(new_code) > 50:
                 break
 

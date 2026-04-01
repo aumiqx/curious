@@ -13,6 +13,7 @@ from curious.seed.world_model import WorldModel, Prediction
 from curious.seed.learner import extract_lesson, get_learning_prompt, compute_surprise
 from curious.seed.curiosity import find_knowledge_frontier, get_exploration_prompt
 from curious.harness.fitness import measure_fitness, format_fitness
+from curious.seed.experimenter import run_self_experiments, resolve_self_experiments
 from curious.harness.evolve import run_evolution_cycle, get_evolution_history, read_seed_files
 from curious.observers.git_observer import GitObserver
 from curious.observers.file_observer import FileObserver
@@ -187,27 +188,39 @@ Respond in JSON:
                 self.world_model.resolve_prediction(pred.id, was_correct=False)
 
     def run_cycle(self, evolve: bool = False) -> dict:
-        """Run one full cycle: observe → resolve → learn → predict → (evolve)."""
+        """Run one full cycle: observe → experiment → resolve → learn → predict → (evolve)."""
         self.cycle_count += 1
         cycle_result = {"cycle": self.cycle_count, "actions": []}
 
-        # 1. Observe
+        # 1. Observe external changes
         self._observe()
         cycle_result["actions"].append("observed")
 
-        # 2. Resolve expired predictions
+        # 2. Run self-experiments (AI generates its own activity)
+        exp_results = run_self_experiments(self.world_model)
+        cycle_result["experiments_created"] = len(exp_results)
+        cycle_result["actions"].append(f"created {len(exp_results)} self-experiments")
+
+        # 3. Resolve self-experiments from previous cycles
+        resolved_exps = resolve_self_experiments(self.world_model)
+        cycle_result["experiments_resolved"] = len(resolved_exps)
+        if resolved_exps:
+            passed = sum(1 for r in resolved_exps if r.get("passed"))
+            cycle_result["actions"].append(f"resolved {len(resolved_exps)} experiments ({passed} passed)")
+
+        # 4. Resolve expired LLM-generated predictions
         self._resolve_predictions()
         cycle_result["actions"].append("resolved_predictions")
 
-        # 3. Make new predictions (learning from resolved ones)
+        # 5. Make new predictions (learning from resolved ones)
         self._make_predictions()
         cycle_result["actions"].append("made_predictions")
 
-        # 4. Explore knowledge frontiers
+        # 6. Explore knowledge frontiers
         self._explore()
         cycle_result["actions"].append("explored_frontiers")
 
-        # 5. Optionally evolve
+        # 7. Optionally evolve (with stronger model)
         if evolve:
             self.generation += 1
             evo_result = run_evolution_cycle(

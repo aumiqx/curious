@@ -79,6 +79,11 @@ def start(observe, llm, interval, evolve_every, max_cycles):
             console.print(f"  Fitness: [cyan]{fitness['composite']:.1%}[/]")
             console.print(f"  LLM: {usage['total_calls']} calls, ~${usage['estimated_cost_usd']:.4f}")
 
+            # Show experiment results
+            if result.get("experiments_resolved"):
+                resolved = result["experiments_resolved"]
+                console.print(f"  [bold]🧪 Experiments:[/] {result.get('experiments_created', 0)} created, {resolved} resolved")
+
             if should_evolve and "evolution" in result:
                 evo = result["evolution"]
                 if evo["action"] == "applied":

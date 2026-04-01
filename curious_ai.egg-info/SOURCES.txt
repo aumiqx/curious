@@ -1,3 +1,4 @@
+README.md
 pyproject.toml
 curious/__init__.py
 curious/cli.py
@@ -12,6 +13,7 @@ curious/providers/__init__.py
 curious/providers/base.py
 curious/seed/__init__.py
 curious/seed/curiosity.py
+curious/seed/experimenter.py
 curious/seed/learner.py
 curious/seed/metacognition.py
 curious/seed/world_model.py

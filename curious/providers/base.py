@@ -17,9 +17,9 @@ class LLMProvider:
         self.total_tokens_used = 0
         self.total_calls = 0
 
-    def ask(self, prompt: str, system: str = "You are a precise analytical system. Always respond in valid JSON.") -> str:
+    def ask(self, prompt: str, system: str = "You are a precise analytical system. Always respond in valid JSON.", model_override: str | None = None) -> str:
         response = self.client.chat.completions.create(
-            model=self.model,
+            model=model_override or self.model,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": prompt},
@@ -33,27 +33,26 @@ class LLMProvider:
 
     def ask_json(self, prompt: str) -> dict | list:
         raw = self.ask(prompt)
-        # Extract JSON from markdown code blocks if present
         match = re.search(r"```(?:json)?\s*([\s\S]*?)```", raw)
         if match:
             raw = match.group(1).strip()
         return json.loads(raw)
 
-    def ask_code(self, prompt: str) -> str:
+    def ask_code(self, prompt: str, model_override: str | None = None) -> str:
+        """Generate code — uses model_override for stronger models on evolution."""
         raw = self.ask(
             prompt,
             system="You are an expert Python 3.11+ developer. Return a COMPLETE, valid Python file inside ```python``` code fences. Include ALL imports, ALL functions, ALL code. No placeholders, no ellipsis, no truncation. The file must be syntactically valid.",
+            model_override=model_override,
         )
         match = re.search(r"```(?:python)?\s*([\s\S]*?)```", raw)
         if match:
             code = match.group(1).strip()
-            # Quick validation before returning
             try:
                 compile(code, "<evolution>", "exec")
                 return code
             except SyntaxError:
                 pass
-        # Try the raw response
         try:
             compile(raw.strip(), "<evolution>", "exec")
             return raw.strip()
@@ -64,7 +63,7 @@ class LLMProvider:
         return {
             "total_calls": self.total_calls,
             "total_tokens": self.total_tokens_used,
-            "estimated_cost_usd": self.total_tokens_used * 0.00000015,  # gpt-4o-mini input rate approx
+            "estimated_cost_usd": self.total_tokens_used * 0.00000015,
         }
 
 
@@ -73,11 +72,9 @@ def create_provider(provider_string: str) -> LLMProvider:
     Parse provider string like:
       "openai:gpt-4o-mini"
       "ollama:llama3"
-      "groq:llama-3.1-70b"
       "http://localhost:11434/v1:llama3"
     """
     if "://" in provider_string:
-        # Custom URL: "http://localhost:11434/v1:model"
         parts = provider_string.rsplit(":", 1)
         base_url = parts[0]
         model = parts[1] if len(parts) > 1 else "default"
@@ -89,30 +86,11 @@ def create_provider(provider_string: str) -> LLMProvider:
 
     if provider_name == "openai":
         return LLMProvider(model=model or "gpt-4o-mini")
-
     elif provider_name == "ollama":
-        return LLMProvider(
-            model=model or "llama3",
-            base_url="http://localhost:11434/v1",
-            api_key="ollama",
-        )
-
+        return LLMProvider(model=model or "llama3", base_url="http://localhost:11434/v1", api_key="ollama")
     elif provider_name == "groq":
-        return LLMProvider(
-            model=model or "llama-3.1-70b-versatile",
-            base_url="https://api.groq.com/openai/v1",
-        )
-
+        return LLMProvider(model=model or "llama-3.1-70b-versatile", base_url="https://api.groq.com/openai/v1")
     elif provider_name == "together":
-        return LLMProvider(
-            model=model or "meta-llama/Llama-3-70b-chat-hf",
-            base_url="https://api.together.xyz/v1",
-        )
-
-    elif provider_name == "anthropic":
-        # Anthropic doesn't use OpenAI-compatible API, but some proxies do
-        return LLMProvider(model=model or "claude-sonnet-4-20250514")
-
+        return LLMProvider(model=model or "meta-llama/Llama-3-70b-chat-hf", base_url="https://api.together.xyz/v1")
     else:
-        # Assume it's a model name for OpenAI
         return LLMProvider(model=provider_string)
