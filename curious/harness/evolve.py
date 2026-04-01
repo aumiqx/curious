@@ -121,34 +121,37 @@ def run_evolution_cycle(
         current_code = seed_files.get(target_file, "")
         change_desc = analysis["proposed_change"]["description"]
 
-        rewrite_prompt = f"""You are evolving a self-improving AI system.
+        rewrite_prompt = f"""Rewrite this Python file with ONE improvement.
 
-## Current Code ({target_file})
+CURRENT FILE: {target_file}
 ```python
 {current_code}
 ```
 
-## Proposed Improvement
+IMPROVEMENT TO MAKE:
 {change_desc}
 
-## Expected Impact
-{analysis['proposed_change'].get('expected_improvement', 'general improvement')}
+CRITICAL RULES:
+- Return the COMPLETE file. Every import, every function, every line.
+- Do NOT skip anything with "..." or "# rest of code" or ellipsis.
+- Keep the exact same function signatures (names, parameters).
+- Keep the module docstring including "THIS FILE IS EVOLVED BY THE AI".
+- Valid Python 3.11+ syntax only.
+- Make ONE focused change. Do not rewrite unrelated parts.
 
-## Rules
-1. Return the COMPLETE rewritten file — not a partial diff
-2. Keep all imports and the module docstring (including "THIS FILE IS EVOLVED BY THE AI")
-3. The code must be valid Python
-4. Maintain all existing function signatures (other code depends on them)
-5. You may add new functions, change logic, add parameters with defaults
-6. Be bold but precise — make a meaningful change, not a trivial one
+```python"""
 
-Return ONLY the Python code."""
-
-        new_code = llm.ask_code(rewrite_prompt)
+        # Try up to 2 times to get valid code
+        new_code = ""
+        for attempt in range(2):
+            new_code = llm.ask_code(rewrite_prompt)
+            if new_code and len(new_code) > 50:
+                break
 
         if not new_code or len(new_code) < 50:
             result["action"] = "skipped"
-            result["description"] = "AI returned empty or too-short code"
+            result["description"] += " [AI failed to generate valid code]"
+            _log_result(evolution_dir, result)
             return result
 
         # Step 5: Write the new code
@@ -160,15 +163,7 @@ Return ONLY the Python code."""
             restore_seed(evolution_dir, generation)
             result["action"] = "reverted"
             result["description"] += " [SYNTAX ERROR — reverted]"
-            return result
-
-        # Step 7: Test import (does the module load?)
-        try:
-            compile(new_code, target_file, "exec")
-        except Exception:
-            restore_seed(evolution_dir, generation)
-            result["action"] = "reverted"
-            result["description"] += " [IMPORT ERROR — reverted]"
+            _log_result(evolution_dir, result)
             return result
 
         # Step 8: Measure new fitness
@@ -198,6 +193,13 @@ Return ONLY the Python code."""
         result["error"] = str(e)
         result["description"] = f"Error during evolution: {e}"
         return result
+
+
+def _log_result(evolution_dir: Path, result: dict):
+    """Append result to evolution log."""
+    log_path = evolution_dir / "evolution_log.jsonl"
+    with open(log_path, "a") as f:
+        f.write(json.dumps(result, default=str) + "\n")
 
 
 def get_evolution_history(evolution_dir: Path) -> list[dict]:

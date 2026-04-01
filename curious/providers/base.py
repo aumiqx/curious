@@ -42,12 +42,23 @@ class LLMProvider:
     def ask_code(self, prompt: str) -> str:
         raw = self.ask(
             prompt,
-            system="You are an expert Python developer. Return ONLY the complete Python file content. No explanations.",
+            system="You are an expert Python 3.11+ developer. Return a COMPLETE, valid Python file inside ```python``` code fences. Include ALL imports, ALL functions, ALL code. No placeholders, no ellipsis, no truncation. The file must be syntactically valid.",
         )
         match = re.search(r"```(?:python)?\s*([\s\S]*?)```", raw)
         if match:
-            return match.group(1).strip()
-        return raw.strip()
+            code = match.group(1).strip()
+            # Quick validation before returning
+            try:
+                compile(code, "<evolution>", "exec")
+                return code
+            except SyntaxError:
+                pass
+        # Try the raw response
+        try:
+            compile(raw.strip(), "<evolution>", "exec")
+            return raw.strip()
+        except SyntaxError:
+            return ""
 
     def get_usage(self) -> dict:
         return {

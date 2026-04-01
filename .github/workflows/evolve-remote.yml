@@ -1,0 +1,70 @@
+name: 🧬 Self-Evolution (Remote Project)
+
+# This workflow observes a DIFFERENT repo and evolves curious based on it
+# Add this to the curious repo — it clones the target project to observe
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: 'Repo to observe (owner/repo)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone target project
+        run: |
+          TARGET="${{ github.event.inputs.target_repo || 'aumiqx/aumiqx' }}"
+          git clone "https://github.com/${TARGET}.git" /tmp/target-project || echo "Using self as target"
+          if [ ! -d "/tmp/target-project" ]; then
+            ln -s "$GITHUB_WORKSPACE" /tmp/target-project
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install curious
+        run: pip install -e .
+
+      - name: Run evolution cycle
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          # Initialize if first run
+          python -m curious.cli init --observe /tmp/target-project --llm openai:gpt-4o-mini || true
+
+          # Run 1 cycle with evolution
+          python -m curious.cli start \
+            --observe /tmp/target-project \
+            --llm openai:gpt-4o-mini \
+            --interval 1 \
+            --evolve-every 1 \
+            --max-cycles 1
+
+      - name: Commit evolved code
+        run: |
+          git config user.name "curious-ai[bot]"
+          git config user.email "curious-ai[bot]@users.noreply.github.com"
+
+          if ! git diff --quiet curious/seed/; then
+            git add curious/seed/
+            git commit -m "🧬 evolve: self-modification from observation cycle"
+            git push
+          else
+            echo "No evolution this cycle"
+          fi
