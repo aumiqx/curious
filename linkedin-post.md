@@ -1,53 +1,58 @@
-I gave an AI access to its own source code.
+# LinkedIn Post — Final Version
 
-Then told it one thing:
+## Post (copy this):
 
-"Rewrite yourself. Get smarter. Create something that has never existed."
+I gave an AI access to its own source code and told it to rewrite itself.
 
-4 days later, here's the scoreboard:
+4 days later, it invented a new programming paradigm.
 
-Day 1 → 47/100 (used existing frameworks, boring)
+Here's the scoreboard:
+
+Day 1 → 47/100 uniqueness (used existing frameworks, boring)
 Day 2 → 71/100 (invented its own programming language)
-Day 3 → 67/100 (dipped, got too conventional)
-Day 4 → 88/100 (created "Symbiocode" — a system where code and data EVOLVE TOGETHER like living organisms)
+Day 3 → 67/100 (got too conventional, score dropped)
+Day 4 → 88/100 (created "Symbiocode" — where code and data evolve together like living organisms)
 
 Nobody told it to invent a language on Day 2.
-Nobody told it to recover after dipping on Day 3.
-Nobody told it to create a new programming paradigm on Day 4.
+Nobody told it to recover after failing on Day 3.
+Nobody told it to create a new paradigm on Day 4.
 
-It decided all of that on its own.
+Every 6 hours, it reads its own source code, finds the weakest part, rewrites it, and tests if the change made it smarter.
 
-Here's the part that broke my brain:
+Every change is a git commit. Receipts, not claims.
 
-Every 6 hours, it reads its OWN source code.
-Finds the weakest part.
-Rewrites it.
-Tests if the rewrite made it smarter.
-Keeps what works. Reverts what doesn't.
-Every change is a git commit.
+Total cost: $0.01. One cent.
 
-The git log of an AI rewriting its own brain:
-
-"evolve: Rewrote curiosity.py"
-"evolve: Added decay to prediction confidence"
-"create: Symbiocode (88/100)"
-
-Total cost so far? $0.01. One cent.
-
-The AI rewrote its own brain and invented a new programming paradigm.
-
-For one cent.
-
-This isn't AGI. This is an experiment called "curious."
-
-It runs on GitHub Actions. Every day at midnight, it creates something new. Every 6 hours, it rewrites its own cognitive architecture.
-
-The repo is open source. The creations folder fills up daily. The uniqueness scores are public.
+It runs on GitHub Actions. Every day at midnight, it creates something new. The repo is open source.
 
 We don't control what it builds. We just watch.
 
-Star the repo. Come back in a week. See what it created while you were sleeping.
+Comment "LINK" and I'll send you the repo.
 
-Link in comments.
+What would YOU point a self-evolving AI at if you could?
 
-#AI #OpenSource #MachineLearning #ArtificialIntelligence #SelfEvolvingAI #AGI #FutureOfAI #BuildInPublic #Experiment #DeepLearning #StartupLife #Innovation #TechTwitter #AIResearch #CreativeAI
+#AI #OpenSource #BuildInPublic #MachineLearning #SelfEvolvingAI
+
+---
+
+## First Comment (post within 30 seconds):
+
+The experiment is called "curious" — an AI that rewrites its own brain.
+
+Open source: github.com/aumiqx/curious
+
+Star it, come back in a week, see what it created while you were sleeping.
+
+---
+
+## Screenshot to attach:
+
+Run `curious gallery` in terminal and screenshot the 4-day progression.
+Or screenshot the Day 4 Symbiocode creation panel (88/100).
+
+## Posting Strategy:
+
+- Post Tuesday-Thursday, 8 AM ET / 6:30 PM IST
+- Reply to EVERY comment in first 60 minutes
+- Pin your first comment with the link
+- Reply to "LINK" commenters with the GitHub URL + a follow-up question
