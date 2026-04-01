@@ -1,0 +1,91 @@
+name: 🧬 Self-Evolution
+
+on:
+  schedule:
+    # Run evolution cycle every 6 hours
+    - cron: '0 */6 * * *'
+  push:
+    branches: [main]
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install curious
+        run: pip install -e .
+
+      - name: Run observation cycle
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          # Initialize if first run
+          if [ ! -f ".curious/brain.db" ]; then
+            python -m curious.cli init --observe . --llm openai:gpt-4o-mini
+          fi
+
+          # Run 1 cycle with evolution
+          python -m curious.cli start \
+            --observe . \
+            --llm openai:gpt-4o-mini \
+            --interval 1 \
+            --evolve-every 1 \
+            --max-cycles 1
+
+      - name: Commit evolved code
+        run: |
+          git config user.name "curious-ai[bot]"
+          git config user.email "curious-ai[bot]@users.noreply.github.com"
+
+          # Check if seed files changed
+          if git diff --quiet curious/seed/; then
+            echo "No evolution this cycle"
+          else
+            # Get the evolution description
+            DESCRIPTION=$(python3 -c "
+          import json
+          from pathlib import Path
+          log = Path('.curious/evolution/evolution_log.jsonl')
+          if log.exists():
+              lines = log.read_text().strip().split('\n')
+              if lines:
+                  last = json.loads(lines[-1])
+                  print(last.get('description', 'self-evolution cycle'))
+              else:
+                  print('self-evolution cycle')
+          else:
+              print('self-evolution cycle')
+          ")
+
+            git add curious/seed/ .curious/
+            git commit -m "🧬 evolve: $DESCRIPTION"
+            git push
+          fi
+
+      - name: Update dashboard artifact
+        run: |
+          python -m curious.cli dashboard --observe . --llm openai:gpt-4o-mini > dashboard.txt 2>&1 || true
+          echo "## 🧬 Evolution Status" > evolution-status.md
+          echo "" >> evolution-status.md
+          echo '```' >> evolution-status.md
+          cat dashboard.txt >> evolution-status.md
+          echo '```' >> evolution-status.md
+
+      - name: Upload dashboard
+        uses: actions/upload-artifact@v4
+        with:
+          name: evolution-dashboard
+          path: evolution-status.md

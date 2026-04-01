@@ -1,0 +1,2 @@
+[console_scripts]
+curious = curious.cli:main
